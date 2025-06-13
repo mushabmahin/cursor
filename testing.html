@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetZone - Watch Movies & TV Shows</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #141414;
+            color: white;
+            line-height: 1.6;
+         
+
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .navbar:hover {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 100%);
+        }
+
+        .logo {
+            color: #E50914;
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .language-selector {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 20px;
+        }
+
+        .language-selector:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .language-selector option {
+            background-color: #141414;
+            color: white;
+        }
+
+        .hero {
+            height: 80vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+                        url('https://image.tmdb.org/t/p/original/9PqD3wSIjntyJDBzMNuxuKHwpUD.jpg') center/cover;
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+        }
+
+        .hero-content {
+            max-width: 600px;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #E50914;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .content-section {
+            padding: 20px 50px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .movie-row {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 20px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .movie-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .movie-card {
+            min-width: 200px;
+            height: 300px;
+            background-color: #2f2f2f;
+            border-radius: 4px;
+            transition: transform 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .movie-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .movie-card:hover .movie-info {
+            opacity: 1;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: #181818;
+            margin: 50px auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 8px;
+            position: relative;
+            color: white;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .movie-header {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .movie-poster {
+            width: 300px;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .movie-details {
+            flex: 1;
+        }
+
+        .movie-title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .movie-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            color: #b3b3b3;
+        }
+
+        .movie-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .rating-badge {
+            background-color: #E50914;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .movie-overview {
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .movie-cast {
+            margin-bottom: 30px;
+        }
+
+        .cast-list {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #E50914 #2f2f2f;
+        }
+
+        .cast-list::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .cast-list::-webkit-scrollbar-track {
+            background: #2f2f2f;
+            border-radius: 4px;
+        }
+
+        .cast-list::-webkit-scrollbar-thumb {
+            background-color: #E50914;
+            border-radius: 4px;
+        }
+
+        .cast-member {
+            text-align: center;
+            min-width: 120px;
+            margin: 10px;
+        }
+
+        .cast-member img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border: 2px solid #E50914;
+        }
+
+        .cast-member h4 {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .cast-member p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #b3b3b3;
+        }
+
+        .movie-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            background-color: #2f2f2f;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .info-item h4 {
+            color: #b3b3b3;
+            margin-bottom: 5px;
+        }
+
+        .play-btn {
+            background-color: #E50914;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .play-btn:hover {
+            background-color: #f40612;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">NETZONE</div>
+        <div class="nav-links">
+            <a href="#" class="active">Home</a>
+            <a href="#">Movies</a>
+            <a href="#">TV Shows</a>
+            <a href="#">New & Popular</a>
+            <a href="#">My List</a>
+            <select class="language-selector" onchange="changeLanguage(this.value)">
+                <option value="english">English</option>
+                <option value="hindi">Hindi</option>
+                <option value="malayalam">Malayalam</option>
+                <option value="tamil">Tamil</option>
+                <option value="kannada">Kannada</option>
+                <option value="telugu">Telugu</option>
+            </select>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to NetZone</h1>
+            <p>Unlimited movies, TV shows, and more. Watch anywhere. Cancel anytime.</p>
+            <button class="btn">Watch Now</button>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2 class="section-title">Trending Now</h2>
+        <div class="movie-row">
+            <div class="movie-card" data-movie-id="1">
+                <img src="https://image.tmdb.org/t/p/w500/1E5baAaEse26fej7uHcjOgEE2t2.jpg" alt="Inception">
+                <div class="movie-info">
+                    <h3>Inception</h3>
+                    <p>Action, Sci-Fi</p>
+                </div>
+            </div>
+            <div class="movie-card" data-movie-id="2">
+                <img src="https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg" alt="The Dark Knight">
+                <div class="movie-info">
+                    <h3>The Dark Knight</h3>
+                    <p>Action, Crime</p>
+                </div>
+            </div>
+            <div class="movie-card" data-movie-id="3">
+                <img src="https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg" alt="The Matrix">
+                <div class="movie-info">
+                    <h3>The Matrix</h3>
+                    <p>Action, Sci-Fi</p>
+                </div>
+            </div>
+            <div class="movie-card" data-movie-id="4">
+                <img src="https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg" alt="Interstellar">
+                <div class="movie-info">
+                    <h3>Interstellar</h3>
+                    <p>Adventure, Drama</p>
+                </div>
+            </div>
+            <div class="movie-card" data-movie-id="5">
+                <img src="https://image.tmdb.org/t/p/w500/4EYPN5mVIhKLfxGruy7Dy41dTVn.jpg" alt="Avengers: Endgame">
+                <div class="movie-info">
+                    <h3>Avengers: Endgame</h3>
+                    <p>Action, Adventure</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2 class="section-title">Popular on NetZone</h2>
+        <div class="movie-row">
+            <div class="movie-card" data-movie-id="6">
+                <img src="https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" alt="The Shawshank Redemption">
+                <div class="movie-info">
+                    <h3>The Shawshank Redemption</h3>
+                    <p>Drama</p>
+                </div>
+            </div>
+            <div class="movie-card" data-movie-id="7">
+                <img src="https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg" alt="Fight Club">
+                <div class="movie-info">
+                    <h3>Fight Club</h3>
+                    <p>Drama, Thriller</p>
+                </div>
+            </div>
+            <div class="movie-card" data-movie-id="8">
+                <img src="https://image.tmdb.org/t/p/w500/2uNW4WbgBXL25BAbXGLnLqX71Sw.jpg" alt="Pulp Fiction">
+                <div class="movie-info">
+                    <h3>Pulp Fiction</h3>
+                    <p>Crime, Drama</p>
+                </div>
+            </div>
+            <div class="movie-card" data-movie-id="9">
+                <img src="https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg" alt="The Godfather">
+                <div class="movie-info">
+                    <h3>The Godfather</h3>
+                    <p>Crime, Drama</p>
+                </div>
+            </div>
+            <div class="movie-card" data-movie-id="10">
+                <img src="https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg" alt="The Matrix">
+                <div class="movie-info">
+                    <h3>The Matrix</h3>
+                    <p>Action, Sci-Fi</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Movie Details Modal -->
+    <div id="movieModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="movie-header">
+                <img id="modalPoster" class="movie-poster" src="" alt="Movie Poster">
+                <div class="movie-details">
+                    <h2 id="modalTitle" class="movie-title"></h2>
+                    <div class="movie-meta">
+                        <span id="modalYear"></span>
+                        <span id="modalRuntime"></span>
+                        <span id="modalGenre"></span>
+                    </div>
+                    <div class="movie-rating">
+                        <div class="rating-badge" id="modalRating"></div>
+                        <span>IMDb Rating</span>
+                    </div>
+                    <p id="modalOverview" class="movie-overview"></p>
+                    <button class="play-btn">
+                        <span>▶</span> Play
+                    </button>
+                </div>
+            </div>
+            <div class="movie-cast">
+                <h3>Cast</h3>
+                <div id="modalCast" class="cast-list"></div>
+            </div>
+            <div class="movie-info-grid">
+                <div class="info-item">
+                    <h4>Director</h4>
+                    <p id="modalDirector"></p>
+                </div>
+                <div class="info-item">
+                    <h4>Release Date</h4>
+                    <p id="modalReleaseDate"></p>
+                </div>
+                <div class="info-item">
+                    <h4>Budget</h4>
+                    <p id="modalBudget"></p>
+                </div>
+                <div class="info-item">
+                    <h4>Revenue</h4>
+                    <p id="modalRevenue"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // TMDB API Configuration
+        const TMDB_API_KEY = '8c247ea0b4b56ed2ff7d41c9a833aa77'; // This is a public API key for demo purposes
+        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+        const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+
+        // Movie IDs for different languages
+        const movieIdsByLanguage = {
+            hindi: {
+                1: '20453', // 3 Idiots
+                2: '356983', // Dangal
+                3: '20453', // Lagaan
+                4: '19404', // Dilwale Dulhania Le Jayenge
+                5: '20453'  // Sholay
+            },
+            malayalam: {
+                1: '20453', // Drishyam
+                2: '20453', // Premam
+                3: '20453', // Bangalore Days
+                4: '20453', // Manichitrathazhu
+                5: '20453'  // Kumbalangi Nights
+            },
+            tamil: {
+                1: '20453', // Vikram
+                2: '20453', // Ponniyin Selvan
+                3: '20453', // Jai Bhim
+                4: '20453', // Nayakan
+                5: '20453'  // Super Deluxe
+            },
+            kannada: {
+                1: '20453', // K.G.F: Chapter 1
+                2: '20453', // Kantara
+                3: '20453', // Ulidavaru Kandanthe
+                4: '20453'  // Rangitaranga
+            },
+            telugu: {
+                1: '20453', // RRR
+                2: '20453', // Baahubali
+                3: '20453', // Arjun Reddy
+                4: '20453'  // Eega
+            }
+        };
+
+        // Function to fetch movie poster from TMDB
+        async function fetchMoviePoster(movieId) {
+            try {
+                const response = await fetch(`${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}`);
+                const data = await response.json();
+                return data.poster_path ? `${TMDB_IMAGE_BASE_URL}${data.poster_path}` : null;
+            } catch (error) {
+                console.error('Error fetching movie poster:', error);
+                return null;
+            }
+        }
+
+        // Movie data for different languages
+        const movieDataByLanguage = {
+            english: {
+                1: {
+                    title: "Inception",
+                    year: "2010",
+                    runtime: "2h 28min",
+                    genre: "Action, Sci-Fi, Thriller",
+                    rating: "8.8",
+                    overview: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
+                    director: "Christopher Nolan",
+                    releaseDate: "July 16, 2010",
+                    budget: "$160,000,000",
+                    revenue: "$836,836,967",
+                    cast: [
+                        { name: "Leonardo DiCaprio", role: "Cobb", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Joseph Gordon-Levitt", role: "Arthur", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Ellen Page", role: "Ariadne", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Tom Hardy", role: "Eames", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                2: {
+                    title: "The Dark Knight",
+                    year: "2008",
+                    runtime: "2h 32min",
+                    genre: "Action, Crime, Drama",
+                    rating: "9.0",
+                    overview: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
+                    director: "Christopher Nolan",
+                    releaseDate: "July 18, 2008",
+                    budget: "$185,000,000",
+                    revenue: "$1,005,973,645",
+                    cast: [
+                        { name: "Christian Bale", role: "Bruce Wayne / Batman", image: "https://image.tmdb.org/t/p/original/4D4Pp0iUcWWr1gu4QF2fRxfF4RL.jpg" },
+                        { name: "Heath Ledger", role: "Joker", image: "https://image.tmdb.org/t/p/original/5UZ8bGGLDlxdqJwUUFeHQv8xN0m.jpg" },
+                        { name: "Aaron Eckhart", role: "Harvey Dent", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" }
+                    ]
+                },
+                3: {
+                    title: "The Matrix",
+                    year: "1999",
+                    runtime: "2h 16min",
+                    genre: "Action, Sci-Fi",
+                    rating: "8.7",
+                    overview: "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+                    director: "Lana Wachowski, Lilly Wachowski",
+                    releaseDate: "March 31, 1999",
+                    budget: "$63,000,000",
+                    revenue: "$463,517,383",
+                    cast: [
+                        { name: "Keanu Reeves", role: "Neo", image: "https://image.tmdb.org/t/p/original/4D4Pp0iUcWWr1gu4QF2fRxfF4RL.jpg" },
+                        { name: "Laurence Fishburne", role: "Morpheus", image: "https://image.tmdb.org/t/p/original/5UZ8bGGLDlxdqJwUUFeHQv8xN0m.jpg" },
+                        { name: "Carrie-Anne Moss", role: "Trinity", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" }
+                    ]
+                },
+                4: {
+                    title: "Interstellar",
+                    year: "2014",
+                    runtime: "2h 49min",
+                    genre: "Adventure, Drama, Sci-Fi",
+                    rating: "8.6",
+                    overview: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+                    director: "Christopher Nolan",
+                    releaseDate: "November 7, 2014",
+                    budget: "$165,000,000",
+                    revenue: "$677,471,339",
+                    cast: [
+                        { name: "Matthew McConaughey", role: "Cooper", image: "https://image.tmdb.org/t/p/original/4D4Pp0iUcWWr1gu4QF2fRxfF4RL.jpg" },
+                        { name: "Anne Hathaway", role: "Brand", image: "https://image.tmdb.org/t/p/original/5UZ8bGGLDlxdqJwUUFeHQv8xN0m.jpg" },
+                        { name: "Jessica Chastain", role: "Murph", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" }
+                    ]
+                },
+                5: {
+                    title: "Avengers: Endgame",
+                    year: "2019",
+                    runtime: "3h 1min",
+                    genre: "Action, Adventure, Drama",
+                    rating: "8.4",
+                    overview: "After the devastating events of Avengers: Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more in order to reverse Thanos' actions and restore balance to the universe.",
+                    director: "Anthony Russo, Joe Russo",
+                    releaseDate: "April 26, 2019",
+                    budget: "$356,000,000",
+                    revenue: "$2,797,501,328",
+                    cast: [
+                        { name: "Robert Downey Jr.", role: "Tony Stark / Iron Man", image: "https://image.tmdb.org/t/p/original/4D4Pp0iUcWWr1gu4QF2fRxfF4RL.jpg" },
+                        { name: "Chris Evans", role: "Steve Rogers / Captain America", image: "https://image.tmdb.org/t/p/original/5UZ8bGGLDlxdqJwUUFeHQv8xN0m.jpg" },
+                        { name: "Scarlett Johansson", role: "Natasha Romanoff / Black Widow", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" }
+                    ]
+                },
+                6: {
+                    title: "The Shawshank Redemption",
+                    year: "1994",
+                    runtime: "2h 22min",
+                    genre: "Drama",
+                    rating: "9.3",
+                    overview: "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+                    director: "Frank Darabont",
+                    releaseDate: "September 23, 1994",
+                    budget: "$25,000,000",
+                    revenue: "$28,341,469",
+                    cast: [
+                        { name: "Tim Robbins", role: "Andy Dufresne", image: "https://image.tmdb.org/t/p/original/tuZCyZVV3H31qkp1aQtuahhUZQv.jpg" },
+                        { name: "Morgan Freeman", role: "Ellis Boyd 'Red' Redding", image: "https://image.tmdb.org/t/p/original/oGJQhOpT8S1M56tvSsbEBePV5O1.jpg" },
+                        { name: "Bob Gunton", role: "Warden Norton", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                7: {
+                    title: "Fight Club",
+                    year: "1999",
+                    runtime: "2h 19min",
+                    genre: "Drama, Thriller",
+                    rating: "8.8",
+                    overview: "An insomniac office worker and a devil-may-care soapmaker form an underground fight club that evolves into something much, much more.",
+                    director: "David Fincher",
+                    releaseDate: "October 15, 1999",
+                    budget: "$63,000,000",
+                    revenue: "$100,853,753",
+                    cast: [
+                        { name: "Brad Pitt", role: "Tyler Durden", image: "https://image.tmdb.org/t/p/original/cckcYc2v0yh1tc9QjRelptcOBko.jpg" },
+                        { name: "Edward Norton", role: "Narrator", image: "https://image.tmdb.org/t/p/original/5XBzD5WuTyVQZeS4VI25z2moMeY.jpg" },
+                        { name: "Helena Bonham Carter", role: "Marla Singer", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" }
+                    ]
+                },
+                8: {
+                    title: "Pulp Fiction",
+                    year: "1994",
+                    runtime: "2h 34min",
+                    genre: "Crime, Drama",
+                    rating: "8.9",
+                    overview: "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.",
+                    director: "Quentin Tarantino",
+                    releaseDate: "October 14, 1994",
+                    budget: "$8,000,000",
+                    revenue: "$213,928,762",
+                    cast: [
+                        { name: "John Travolta", role: "Vincent Vega", image: "https://image.tmdb.org/t/p/original/ns8uZHEHzV18ifqA9secv8c2Ard.jpg" },
+                        { name: "Samuel L. Jackson", role: "Jules Winnfield", image: "https://image.tmdb.org/t/p/original/5UZ8bGGLDlxdqJwUUFeHQv8xN0m.jpg" },
+                        { name: "Uma Thurman", role: "Mia Wallace", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" }
+                    ]
+                },
+                9: {
+                    title: "The Godfather",
+                    year: "1972",
+                    runtime: "2h 55min",
+                    genre: "Crime, Drama",
+                    rating: "9.2",
+                    overview: "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
+                    director: "Francis Ford Coppola",
+                    releaseDate: "March 24, 1972",
+                    budget: "$6,000,000",
+                    revenue: "$245,066,411",
+                    cast: [
+                        { name: "Marlon Brando", role: "Don Vito Corleone", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Al Pacino", role: "Michael Corleone", image: "https://image.tmdb.org/t/p/original/5UZ8bGGLDlxdqJwUUFeHQv8xN0m.jpg" },
+                        { name: "James Caan", role: "Sonny Corleone", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" }
+                    ]
+                },
+                10: {
+                    title: "The Matrix",
+                    year: "1999",
+                    runtime: "2h 16min",
+                    genre: "Action, Sci-Fi",
+                    rating: "8.7",
+                    overview: "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+                    director: "Lana Wachowski, Lilly Wachowski",
+                    releaseDate: "March 31, 1999",
+                    budget: "$63,000,000",
+                    revenue: "$463,517,383",
+                    cast: [
+                        { name: "Keanu Reeves", role: "Neo", image: "https://image.tmdb.org/t/p/original/4D4Pp0iUcWWr1gu4QF2fRxfF4RL.jpg" },
+                        { name: "Laurence Fishburne", role: "Morpheus", image: "https://image.tmdb.org/t/p/original/5UZ8bGGLDlxdqJwUUFeHQv8xN0m.jpg" },
+                        { name: "Carrie-Anne Moss", role: "Trinity", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" }
+                    ]
+                },
+                11: {
+                    title: "The Lord of the Rings: The Fellowship of the Ring",
+                    year: "2001",
+                    runtime: "2h 58min",
+                    genre: "Action, Adventure, Drama",
+                    rating: "8.8",
+                    overview: "A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.",
+                    director: "Peter Jackson",
+                    releaseDate: "December 19, 2001",
+                    budget: "$93,000,000",
+                    revenue: "$871,530,324",
+                    cast: [
+                        { name: "Elijah Wood", role: "Frodo Baggins", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Ian McKellen", role: "Gandalf", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Viggo Mortensen", role: "Aragorn", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                12: {
+                    title: "Forrest Gump",
+                    year: "1994",
+                    runtime: "2h 22min",
+                    genre: "Drama, Romance",
+                    rating: "8.8",
+                    overview: "The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75.",
+                    director: "Robert Zemeckis",
+                    releaseDate: "July 6, 1994",
+                    budget: "$55,000,000",
+                    revenue: "$677,945,399",
+                    cast: [
+                        { name: "Tom Hanks", role: "Forrest Gump", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Robin Wright", role: "Jenny Curran", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Gary Sinise", role: "Lieutenant Dan", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                }
+            },
+            hindi: {
+                1: {
+                    title: "3 Idiots",
+                    year: "2009",
+                    runtime: "2h 50min",
+                    genre: "Comedy, Drama",
+                    rating: "8.4",
+                    overview: "Two friends are searching for their long lost companion. They revisit their college days and recall the memories of their friend who inspired them to think differently.",
+                    director: "Rajkumar Hirani",
+                    releaseDate: "December 25, 2009",
+                    budget: "₹55 crore",
+                    revenue: "₹460 crore",
+                    cast: [
+                        { name: "Aamir Khan", role: "Rancho", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "R. Madhavan", role: "Farhan", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Sharman Joshi", role: "Raju", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                2: {
+                    title: "Dangal",
+                    year: "2016",
+                    runtime: "2h 41min",
+                    genre: "Action, Biography, Drama",
+                    rating: "8.4",
+                    overview: "Former wrestler Mahavir Singh Phogat and his two wrestler daughters struggle towards glory at the Commonwealth Games in the face of societal oppression.",
+                    director: "Nitesh Tiwari",
+                    releaseDate: "December 23, 2016",
+                    budget: "₹70 crore",
+                    revenue: "₹2,024 crore",
+                    cast: [
+                        { name: "Aamir Khan", role: "Mahavir Singh Phogat", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Sakshi Tanwar", role: "Daya Kaur", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Fatima Sana Shaikh", role: "Geeta Phogat", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                3: {
+                    title: "Lagaan",
+                    year: "2001",
+                    runtime: "3h 44min",
+                    genre: "Drama, Sport",
+                    rating: "8.1",
+                    overview: "The people of a small village in Victorian India stake their future on a game of cricket against their ruthless British rulers.",
+                    director: "Ashutosh Gowariker",
+                    releaseDate: "June 15, 2001",
+                    budget: "₹25 crore",
+                    revenue: "₹65 crore",
+                    cast: [
+                        { name: "Aamir Khan", role: "Bhuvan", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Gracy Singh", role: "Gauri", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Rachel Shelley", role: "Elizabeth", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                4: {
+                    title: "Dilwale Dulhania Le Jayenge",
+                    year: "1995",
+                    runtime: "3h 9min",
+                    genre: "Drama, Romance",
+                    rating: "8.3",
+                    overview: "When Raj meets Simran in Europe, it isn't love at first sight but when Simran moves to India for an arranged marriage, love makes its presence felt.",
+                    director: "Aditya Chopra",
+                    releaseDate: "October 20, 1995",
+                    budget: "₹40 crore",
+                    revenue: "₹200 crore",
+                    cast: [
+                        { name: "Shah Rukh Khan", role: "Raj Malhotra", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Kajol", role: "Simran Singh", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Amrish Puri", role: "Baldev Singh", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                5: {
+                    title: "Sholay",
+                    year: "1975",
+                    runtime: "3h 24min",
+                    genre: "Action, Adventure, Comedy",
+                    rating: "8.2",
+                    overview: "After his family is murdered by a notorious and ruthless bandit, a former police officer enlists the services of two outlaws to capture the bandit.",
+                    director: "Ramesh Sippy",
+                    releaseDate: "August 15, 1975",
+                    budget: "₹3 crore",
+                    revenue: "₹350 crore",
+                    cast: [
+                        { name: "Amitabh Bachchan", role: "Jai", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Dharmendra", role: "Veeru", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Amjad Khan", role: "Gabbar Singh", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                }
+            },
+            malayalam: {
+                1: {
+                    title: "Drishyam",
+                    year: "2013",
+                    runtime: "2h 40min",
+                    genre: "Crime, Drama, Thriller",
+                    rating: "8.6",
+                    overview: "A man goes to extreme lengths to save his family from punishment after the family commits an accidental crime.",
+                    director: "Jeethu Joseph",
+                    releaseDate: "December 19, 2013",
+                    budget: "₹4.5 crore",
+                    revenue: "₹50 crore",
+                    cast: [
+                        { name: "Mohanlal", role: "Georgekutty", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Meena", role: "Rani", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Ansiba", role: "Anju", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                2: {
+                    title: "Premam",
+                    year: "2015",
+                    runtime: "2h 36min",
+                    genre: "Comedy, Drama, Romance",
+                    rating: "8.3",
+                    overview: "A young man has three opportunities to find love. Will the third time be the charm?",
+                    director: "Alphonse Puthren",
+                    releaseDate: "May 29, 2015",
+                    budget: "₹4 crore",
+                    revenue: "₹60 crore",
+                    cast: [
+                        { name: "Nivin Pauly", role: "George", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Sai Pallavi", role: "Malar", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Anupama Parameswaran", role: "Mary", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                3: {
+                    title: "Bangalore Days",
+                    year: "2014",
+                    runtime: "2h 51min",
+                    genre: "Comedy, Drama, Romance",
+                    rating: "8.1",
+                    overview: "Three cousins set out to fulfill their Bangalore dreams.",
+                    director: "Anjali Menon",
+                    releaseDate: "May 30, 2014",
+                    budget: "₹5 crore",
+                    revenue: "₹50 crore",
+                    cast: [
+                        { name: "Dulquer Salmaan", role: "Arjun", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Nivin Pauly", role: "Kuttan", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Fahadh Faasil", role: "Divya", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                4: {
+                    title: "Manichitrathazhu",
+                    year: "1993",
+                    runtime: "2h 49min",
+                    genre: "Horror, Mystery, Thriller",
+                    rating: "8.6",
+                    overview: "A newly married psychiatrist discovers that his wife's behavior is linked to a spirit from the past.",
+                    director: "Fazil",
+                    releaseDate: "December 25, 1993",
+                    budget: "₹1.5 crore",
+                    revenue: "₹5 crore",
+                    cast: [
+                        { name: "Mohanlal", role: "Dr. Sunny Joseph", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Shobana", role: "Ganga", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Suresh Gopi", role: "Nakulan", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                5: {
+                    title: "Kumbalangi Nights",
+                    year: "2019",
+                    runtime: "2h 15min",
+                    genre: "Drama, Romance",
+                    rating: "8.5",
+                    overview: "The film follows the relationship between four brothers living in a fishing village and their journey to overcome their differences.",
+                    director: "Madhu C. Narayanan",
+                    releaseDate: "February 7, 2019",
+                    budget: "₹4 crore",
+                    revenue: "₹50 crore",
+                    cast: [
+                        { name: "Shane Nigam", role: "Shammi", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Soubin Shahir", role: "Saji", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Fahadh Faasil", role: "Shammi", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                }
+            },
+            tamil: {
+                1: {
+                    title: "Vikram",
+                    year: "2022",
+                    runtime: "2h 55min",
+                    genre: "Action, Crime, Thriller",
+                    rating: "8.4",
+                    overview: "A special agent investigates a murder case involving a drug syndicate and uncovers a larger conspiracy.",
+                    director: "Lokesh Kanagaraj",
+                    releaseDate: "June 3, 2022",
+                    budget: "₹100 crore",
+                    revenue: "₹400 crore",
+                    cast: [
+                        { name: "Kamal Haasan", role: "Vikram", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Vijay Sethupathi", role: "Sandhanam", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Fahadh Faasil", role: "Amar", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                2: {
+                    title: "Ponniyin Selvan: I",
+                    year: "2022",
+                    runtime: "2h 47min",
+                    genre: "Action, Adventure, Drama",
+                    rating: "7.8",
+                    overview: "The story of the early days of Arulmozhivarman, one of the most powerful kings in the south.",
+                    director: "Mani Ratnam",
+                    releaseDate: "September 30, 2022",
+                    budget: "₹500 crore",
+                    revenue: "₹500 crore",
+                    cast: [
+                        { name: "Vikram", role: "Aditya Karikalan", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Aishwarya Rai", role: "Nandini", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Jayam Ravi", role: "Arulmozhi Varman", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                3: {
+                    title: "Jai Bhim",
+                    year: "2021",
+                    runtime: "2h 44min",
+                    genre: "Crime, Drama",
+                    rating: "8.8",
+                    overview: "When a tribal man is arrested for a case of alleged theft, his wife turns to a human-rights lawyer to help bring justice.",
+                    director: "T.J. Gnanavel",
+                    releaseDate: "November 2, 2021",
+                    budget: "₹15 crore",
+                    revenue: "₹100 crore",
+                    cast: [
+                        { name: "Suriya", role: "Chandru", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Lijo Mol Jose", role: "Sengeni", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Manikandan", role: "Raju", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                4: {
+                    title: "Nayakan",
+                    year: "1987",
+                    runtime: "2h 56min",
+                    genre: "Crime, Drama",
+                    rating: "8.6",
+                    overview: "A common man's struggles against a corrupt police force put him on the wrong side of the law. He becomes a don, who is loved and respected by many.",
+                    director: "Mani Ratnam",
+                    releaseDate: "October 21, 1987",
+                    budget: "₹1.5 crore",
+                    revenue: "₹5 crore",
+                    cast: [
+                        { name: "Kamal Haasan", role: "Sakthivelu Nayakar", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Saranya", role: "Neela", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Karthika", role: "Charumathi", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                5: {
+                    title: "Super Deluxe",
+                    year: "2019",
+                    runtime: "2h 56min",
+                    genre: "Comedy, Drama, Thriller",
+                    rating: "8.3",
+                    overview: "Four different stories are interlinked in this anthology film that explores themes of love, sex, and relationships.",
+                    director: "Thiagarajan Kumararaja",
+                    releaseDate: "March 29, 2019",
+                    budget: "₹25 crore",
+                    revenue: "₹50 crore",
+                    cast: [
+                        { name: "Vijay Sethupathi", role: "Shilpa", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Fahadh Faasil", role: "Mugil", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Samantha Akkineni", role: "Vaembu", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                }
+            },
+            kannada: {
+                1: {
+                    title: "K.G.F: Chapter 1",
+                    year: "2018",
+                    runtime: "2h 35min",
+                    genre: "Action, Crime, Drama",
+                    rating: "8.2",
+                    overview: "In the 1970s, a gangster goes undercover as a slave to assassinate the owner of a notorious gold mine.",
+                    director: "Prashanth Neel",
+                    releaseDate: "December 21, 2018",
+                    budget: "₹80 crore",
+                    revenue: "₹250 crore",
+                    cast: [
+                        { name: "Yash", role: "Rocky", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Srinidhi Shetty", role: "Reena", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Ramachandra Raju", role: "Garuda", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                2: {
+                    title: "Kantara",
+                    year: "2022",
+                    runtime: "2h 30min",
+                    genre: "Action, Drama, Thriller",
+                    rating: "8.4",
+                    overview: "A human and nature conflict where culture is at stake. When a reclusive demigod and a rebellious young man cross paths, the entire village's future hangs in the balance.",
+                    director: "Rishab Shetty",
+                    releaseDate: "September 30, 2022",
+                    budget: "₹16 crore",
+                    revenue: "₹400 crore",
+                    cast: [
+                        { name: "Rishab Shetty", role: "Shiva", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Sapthami Gowda", role: "Leela", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Kishore", role: "Murali", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                3: {
+                    title: "Ulidavaru Kandanthe",
+                    year: "2014",
+                    runtime: "2h 34min",
+                    genre: "Crime, Drama, Mystery",
+                    rating: "8.2",
+                    overview: "A journalist's investigation into a murder case reveals multiple interconnected stories in the coastal town of Malpe.",
+                    director: "Rakshit Shetty",
+                    releaseDate: "March 28, 2014",
+                    budget: "₹2 crore",
+                    revenue: "₹5 crore",
+                    cast: [
+                        { name: "Rakshit Shetty", role: "Richie", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Sheetal Shetty", role: "Meera", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Achyuth Kumar", role: "Guru", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                4: {
+                    title: "Rangitaranga",
+                    year: "2015",
+                    runtime: "2h 38min",
+                    genre: "Mystery, Thriller",
+                    rating: "8.4",
+                    overview: "A novelist's investigation into a mysterious village leads to a series of unexpected events and revelations.",
+                    director: "Anup Bhandari",
+                    releaseDate: "July 24, 2015",
+                    budget: "₹3 crore",
+                    revenue: "₹15 crore",
+                    cast: [
+                        { name: "Nirup Bhandari", role: "Gautham", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Radhika Chetan", role: "Indu", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Avantika Shetty", role: "Anu", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                }
+            },
+            telugu: {
+                1: {
+                    title: "RRR",
+                    year: "2022",
+                    runtime: "3h 7min",
+                    genre: "Action, Drama",
+                    rating: "7.8",
+                    overview: "A fictitious story about two legendary revolutionaries and their journey away from home before they started fighting for their country in the 1920s.",
+                    director: "S.S. Rajamouli",
+                    releaseDate: "March 25, 2022",
+                    budget: "₹550 crore",
+                    revenue: "₹1,200 crore",
+                    cast: [
+                        { name: "N.T. Rama Rao Jr.", role: "Komaram Bheem", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Ram Charan", role: "Alluri Sitarama Raju", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Alia Bhatt", role: "Sita", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                2: {
+                    title: "Baahubali: The Beginning",
+                    year: "2015",
+                    runtime: "2h 39min",
+                    genre: "Action, Adventure, Drama",
+                    rating: "8.0",
+                    overview: "In ancient India, an adventurous and daring man becomes involved in a decades-old feud between two warring peoples.",
+                    director: "S.S. Rajamouli",
+                    releaseDate: "July 10, 2015",
+                    budget: "₹180 crore",
+                    revenue: "₹650 crore",
+                    cast: [
+                        { name: "Prabhas", role: "Baahubali", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Rana Daggubati", role: "Bhallaladeva", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Anushka Shetty", role: "Devasena", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                3: {
+                    title: "Arjun Reddy",
+                    year: "2017",
+                    runtime: "3h 2min",
+                    genre: "Drama, Romance",
+                    rating: "8.1",
+                    overview: "A short-tempered house surgeon gets used to drugs and drinks when his girlfriend is forced to marry another person.",
+                    director: "Sandeep Reddy Vanga",
+                    releaseDate: "August 25, 2017",
+                    budget: "₹5 crore",
+                    revenue: "₹50 crore",
+                    cast: [
+                        { name: "Vijay Deverakonda", role: "Arjun Reddy", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Shalini Pandey", role: "Preethi", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Rahul Ramakrishna", role: "Shiva", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                },
+                4: {
+                    title: "Eega",
+                    year: "2012",
+                    runtime: "2h 15min",
+                    genre: "Action, Comedy, Fantasy",
+                    rating: "7.8",
+                    overview: "A murdered man is reincarnated as a housefly and seeks to avenge his death.",
+                    director: "S.S. Rajamouli",
+                    releaseDate: "July 6, 2012",
+                    budget: "₹30 crore",
+                    revenue: "₹125 crore",
+                    cast: [
+                        { name: "Sudeep", role: "Sudeep", image: "https://image.tmdb.org/t/p/original/woFxlWxLYXfzWxJzJj83j9YtF7d.jpg" },
+                        { name: "Nani", role: "Nani", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" },
+                        { name: "Samantha", role: "Bindu", image: "https://image.tmdb.org/t/p/original/4U9GmJbFVBHjzqYxVjJ8qXZzZzZ.jpg" }
+                    ]
+                }
+            }
+        };
+
+        let currentLanguage = 'english';
+        let currentMovieData = movieDataByLanguage[currentLanguage];
+
+        function changeLanguage(language) {
+            currentLanguage = language;
+            currentMovieData = movieDataByLanguage[language];
+            
+            // Update active state of language selector
+            document.querySelector('.language-selector').value = language;
+            
+            // Update movie display
+            updateMovieDisplay();
+        }
+
+        // Function to search for movie by title
+        async function searchMovieByTitle(title, language) {
+            try {
+                const response = await fetch(`${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}&language=${language}`);
+                const data = await response.json();
+                if (data.results && data.results.length > 0) {
+                    return data.results[0].poster_path ? `${TMDB_IMAGE_BASE_URL}${data.results[0].poster_path}` : null;
+                }
+                return null;
+            } catch (error) {
+                console.error('Error searching movie:', error);
+                return null;
+            }
+        }
+
+        // Modified updateMovieDisplay function
+        async function updateMovieDisplay() {
+            const movieRows = document.querySelectorAll('.movie-row');
+            movieRows.forEach(async (row, index) => {
+                row.innerHTML = '';
+                const startIndex = index === 0 ? 1 : 6;
+                const endIndex = index === 0 ? 5 : 12;
+                
+                const languageMovies = movieDataByLanguage[currentLanguage];
+                const movieIds = Object.keys(languageMovies);
+                
+                const startIdx = index === 0 ? 0 : Math.floor(movieIds.length / 2);
+                const endIdx = index === 0 ? Math.floor(movieIds.length / 2) : movieIds.length;
+                
+                for (let i = startIdx; i < endIdx; i++) {
+                    const movieId = movieIds[i];
+                    const movie = languageMovies[movieId];
+                    
+                    if (movie) {
+                        let posterUrl = '';
+                        
+                        if (currentLanguage === 'english') {
+                            // Keep existing English movie poster URLs
+                            switch(movieId) {
+                                case '1': posterUrl = 'https://image.tmdb.org/t/p/w500/1E5baAaEse26fej7uHcjOgEE2t2.jpg'; break;
+                                case '2': posterUrl = 'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg'; break;
+                                case '3': posterUrl = 'https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg'; break;
+                                case '4': posterUrl = 'https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg'; break;
+                                case '5': posterUrl = 'https://image.tmdb.org/t/p/w500/4EYPN5mVIhKLfxGruy7Dy41dTVn.jpg'; break;
+                                case '6': posterUrl = 'https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg'; break;
+                                case '7': posterUrl = 'https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg'; break;
+                                case '8': posterUrl = 'https://image.tmdb.org/t/p/w500/2uNW4WbgBXL25BAbXGLnLqX71Sw.jpg'; break;
+                                case '9': posterUrl = 'https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg'; break;
+                                case '10': posterUrl = 'https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg'; break;
+                                case '11': posterUrl = 'https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg'; break;
+                                case '12': posterUrl = 'https://image.tmdb.org/t/p/w500/arw2vcBveWOVZrFpxxaqdtQ85Pq.jpg'; break;
+                            }
+                        } else {
+                            // Search for non-English movies by title
+                            const languageCode = {
+                                'hindi': 'hi',
+                                'malayalam': 'ml',
+                                'tamil': 'ta',
+                                'kannada': 'kn',
+                                'telugu': 'te'
+                            }[currentLanguage] || 'en';
+                            
+                            posterUrl = await searchMovieByTitle(movie.title, languageCode);
+                        }
+
+                        // If no poster URL is found, use a placeholder
+                        if (!posterUrl) {
+                            posterUrl = `https://via.placeholder.com/200x300?text=${encodeURIComponent(movie.title)}`;
+                        }
+
+                        row.innerHTML += `
+                            <div class="movie-card" data-movie-id="${movieId}">
+                                <img src="${posterUrl}" alt="${movie.title}" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x300?text=${encodeURIComponent(movie.title)}';">
+                                <div class="movie-info">
+                                    <h3>${movie.title}</h3>
+                                    <p>${movie.genre}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+
+            // Reattach click event listeners
+            attachMovieCardListeners();
+        }
+
+        function attachMovieCardListeners() {
+            document.querySelectorAll('.movie-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const movieId = card.getAttribute('data-movie-id');
+                    const movie = currentMovieData[movieId];
+                    
+                    if (movie) {
+                        const modal = document.getElementById('movieModal');
+                        document.getElementById('modalPoster').src = card.querySelector('img').src;
+                        document.getElementById('modalTitle').textContent = movie.title;
+                        document.getElementById('modalYear').textContent = movie.year;
+                        document.getElementById('modalRuntime').textContent = movie.runtime;
+                        document.getElementById('modalGenre').textContent = movie.genre;
+                        document.getElementById('modalRating').textContent = movie.rating;
+                        document.getElementById('modalOverview').textContent = movie.overview;
+                        document.getElementById('modalDirector').textContent = movie.director;
+                        document.getElementById('modalReleaseDate').textContent = movie.releaseDate;
+                        document.getElementById('modalBudget').textContent = movie.budget;
+                        document.getElementById('modalRevenue').textContent = movie.revenue;
+
+                        // Populate cast with fallback images
+                        const castList = document.getElementById('modalCast');
+                        castList.innerHTML = '';
+                        movie.cast.forEach(person => {
+                            const fallbackImage = `https://via.placeholder.com/100?text=${encodeURIComponent(person.name)}`;
+                            castList.innerHTML += `
+                                <div class="cast-member">
+                                    <img src="${person.image}" alt="${person.name}" onerror="this.onerror=null; this.src='${fallbackImage}';">
+                                    <h4>${person.name}</h4>
+                                    <p>${person.role}</p>
+                                </div>
+                            `;
+                        });
+
+                        modal.style.display = 'block';
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+        }
+
+        // Add modal close functionality
+        document.querySelector('.close-modal').addEventListener('click', () => {
+            document.getElementById('movieModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('movieModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Initial setup
+        updateMovieDisplay();
+    </script>
+</body>
+</html>
